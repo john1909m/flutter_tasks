@@ -7,132 +7,244 @@ class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xff190050),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: const Color(0xff190050),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+          child: Column(
+            children: [
+              // Profile Image with Glow Effect
+              Container(
+                width: 160,
+                height: 160,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFF0D47A1),
+                      Color(0xFF004D40),
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xff3400ad).withOpacity(0.5),
+                      blurRadius: 30,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(6),
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage("assets/IMG_7859ddrr.webp"),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Name
+              Text(
+                "John Emil",
+                style: GoogleFonts.archivoBlack(
+                  fontSize: 32,
+                  color: Colors.white,
+                  letterSpacing: 1.5,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              // Title Tags
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                alignment: WrapAlignment.center,
+                children: [
+                  _buildTag("Full Stack Developer"),
+
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              // Divider with gradient
+              Container(
+                height: 2,
+                margin: const EdgeInsets.symmetric(horizontal: 40),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [
+                      Colors.transparent,
+                      Colors.white70,
+                      Colors.transparent,
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Info Cards
+              _buildInfoCard(
+                icon: Icons.phone,
+                label: "Phone",
+                value: "01200158852",
+              ),
+
+              const SizedBox(height: 12),
+
+              _buildInfoCard(
+                icon: Icons.email,
+                label: "Email",
+                value: "johnemil21@yahoo.com",
+              ),
+
+              const SizedBox(height: 12),
+
+              _buildInfoCard(
+                icon: Icons.location_city_sharp,
+                label: "Location",
+                value: "Giza - October",
+              ),
+
+              const SizedBox(height: 30),
+
+              // Action Buttons
+
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTag(String text) {
+    return Card(
+      color: const Color(0xff3400ad),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      elevation: 4,
+      shadowColor: const Color(0xff3400ad).withOpacity(0.3),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoCard({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(
+          color: Color(0xff3400ad),
+          width: 1.5,
+        ),
+      ),
+      color: Colors.white.withOpacity(0.05),
+      elevation: 8,
+      shadowColor: const Color(0xff3400ad).withOpacity(0.2),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
           children: [
             Container(
-              width: 150,
-              height: 150,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
                   colors: [
-                    Color(0xFF0D47A1),
-                    Color(0xFF004D40),
+                    Color(0xff3400ad),
+                    Color(0xff190050),
                   ],
                 ),
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: const Padding(
-                padding: EdgeInsets.all(5),
-                child: CircleAvatar(
-                  backgroundImage: AssetImage("assets/IMG_7859ddrr.webp",),
-                ),
+              child: Icon(
+                icon,
+                size: 22,
+                color: Colors.white,
               ),
             ),
-            SizedBox(height: 10,),
-            Text("John Emil",style: GoogleFonts.archivoBlack(fontSize: 30,color: Colors.white),),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Card(
-                    color: Color(0xff3400ad),
-
-                  child: Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text("Full Stack Developer",style:TextStyle(fontSize: 12,fontWeight: FontWeight.bold, color: Color(0xffffffff))),
-
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Colors.grey.shade400,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-
-                ),
-                Card(
-                    color: Color(0xff3400ad),
-
-                  child: Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text("Graphic Designer",style:TextStyle(fontSize: 12,fontWeight: FontWeight.bold, color: Color(0xffffffff))),
-
+                  const SizedBox(height: 2),
+                  Text(
+                    value,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-
-                ),
-              ],
-            ),
-            Divider(
-              color: Colors.white,
-              thickness: 2,
-              indent: 30,
-              endIndent: 30,
-            ),
-            SizedBox(height: 10,),
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: const BorderSide(
-                  color: Color(0xff3400ad),
-                  width: 2,
-                ),
-              ),
-              color: Colors.white10,
-
-              child: Padding(
-                padding:EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    Icon(Icons.phone,size: 25,color: Colors.white,),
-                    SizedBox(width: 20,),
-                    Text("01200158852",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.white),),
-                  ],
-                ),
+                ],
               ),
             ),
-            SizedBox(height: 10,),
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: const BorderSide(
-                  color: Color(0xff3400ad),
-                  width: 2,
-                ),
-              ),
-              color: Colors.white10,
-              child: Padding(
-                padding:EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    Icon(Icons.email,size: 25,color: Colors.white,),
-                    SizedBox(width: 20,),
-                    Text("johnemil21@yahoo.com",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.white),),
-                  ],
-                ),
-              ),
+            const Icon(
+              Icons.chevron_right,
+              color: Colors.white54,
+              size: 20,
             ),
-            SizedBox(height: 10,),
-            Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: const BorderSide(
-                  color: Color(0xff3400ad),
-                  width: 2,
-                ),
-              ),
-              color: Colors.white10,
-              child: Padding(
-                padding:EdgeInsets.all(12),
-                child: Row(
-                  children: [
-                    Icon(Icons.location_city_sharp,size: 25,color: Colors.white,),
-                    SizedBox(width: 20,),
-                    Text("Giza - October",style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.white),),
-                  ],
-                ),
-              ),
-            ),
-
-
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required Color color,
+  }) {
+    return ElevatedButton(
+      onPressed: () {},
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 6,
+        shadowColor: color.withOpacity(0.4),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 18),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }

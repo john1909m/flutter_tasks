@@ -136,6 +136,7 @@ class _HomeState extends State<Home> {
                         children: [
                           Text("Weight",style: TextStyle(fontSize: 18,color: Colors.grey[400]),),
                           Text("$weight",style: TextStyle(fontSize: 30,fontWeight: FontWeight.bold,color: Colors.white),),
+
                           Text("kg",style: TextStyle(fontSize: 15,color: Colors.grey[400]),),
                           Row(
                             mainAxisAlignment: .center,
