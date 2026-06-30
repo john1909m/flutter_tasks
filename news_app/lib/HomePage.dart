@@ -1,10 +1,12 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
+
+import 'ThemeProvider.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -27,6 +29,12 @@ class _HomepageState extends State<Homepage> {
   final Color secondaryColor = const Color(0xFF002BB5);
   final Color accentColor = const Color(0xFF5B7BFB);
   final Color backgroundColor = const Color(0xFFF8FAFC); // Light Gray
+
+  // Dark mode colors
+  final Color darkPrimaryColor = const Color(0xFF1A1A2E);
+  final Color darkBackgroundColor = const Color(0xFF16213E);
+  final Color darkCardColor = const Color(0xFF1F2A48);
+  final Color darkTextColor = const Color(0xFFE2E8F0);
 
   Future<void> getData() async {
     setState(() => isLoading = true);
@@ -62,11 +70,14 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDarkMode = themeProvider.themeMode == ThemeMode.dark;
+
     return Scaffold(
-      backgroundColor: backgroundColor,
+      backgroundColor: isDarkMode ? darkBackgroundColor : backgroundColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: primaryColor,
+        backgroundColor: isDarkMode ? darkPrimaryColor : primaryColor,
         centerTitle: true,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -95,6 +106,29 @@ class _HomepageState extends State<Homepage> {
             ),
           ],
         ),
+        actions: [
+          // Theme Toggle Button
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: GestureDetector(
+              onTap: () async {
+                await themeProvider.toggleTheme(!isDarkMode);
+              },
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  isDarkMode ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(
@@ -108,10 +142,12 @@ class _HomepageState extends State<Homepage> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: isDarkMode ? darkCardColor : Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.05),
+                  color: isDarkMode
+                      ? Colors.black.withOpacity(0.2)
+                      : Colors.grey.withOpacity(0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 2),
                 ),
@@ -139,12 +175,14 @@ class _HomepageState extends State<Homepage> {
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                       decoration: BoxDecoration(
-                        color: isSelected ? primaryColor : Colors.grey.shade100,
+                        color: isSelected
+                            ? (isDarkMode ? Colors.blue.shade700 : primaryColor)
+                            : (isDarkMode ? Colors.grey.shade800 : Colors.grey.shade100),
                         borderRadius: BorderRadius.circular(25),
                         boxShadow: isSelected
                             ? [
                           BoxShadow(
-                            color: primaryColor.withOpacity(0.3),
+                            color: (isDarkMode ? Colors.blue.shade700 : primaryColor).withOpacity(0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -156,14 +194,18 @@ class _HomepageState extends State<Homepage> {
                           children: [
                             Icon(
                               _getCategoryIcon(category),
-                              color: isSelected ? Colors.white : Colors.grey.shade600,
+                              color: isSelected
+                                  ? Colors.white
+                                  : (isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600),
                               size: 16,
                             ),
                             const SizedBox(width: 6),
                             Text(
                               category,
                               style: TextStyle(
-                                color: isSelected ? Colors.white : Colors.grey.shade700,
+                                color: isSelected
+                                    ? Colors.white
+                                    : (isDarkMode ? Colors.grey.shade400 : Colors.grey.shade700),
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                                 fontSize: 13,
                                 letterSpacing: 0.3,
@@ -179,7 +221,6 @@ class _HomepageState extends State<Homepage> {
             ),
           ),
 
-
           Expanded(
             child: isLoading
                 ? Center(
@@ -194,7 +235,7 @@ class _HomepageState extends State<Homepage> {
                   Text(
                     "Loading ${selectedCategory.toUpperCase()}...",
                     style: TextStyle(
-                      color: Colors.grey.shade600,
+                      color: isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
@@ -210,7 +251,7 @@ class _HomepageState extends State<Homepage> {
                   Icon(
                     Icons.search_off_rounded,
                     size: 80,
-                    color: Colors.grey.shade300,
+                    color: isDarkMode ? Colors.grey.shade600 : Colors.grey.shade300,
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -218,14 +259,14 @@ class _HomepageState extends State<Homepage> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade700,
+                      color: isDarkMode ? Colors.grey.shade300 : Colors.grey.shade700,
                     ),
                   ),
                   Text(
                     "Try selecting a different category",
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey.shade500,
+                      color: isDarkMode ? Colors.grey.shade500 : Colors.grey.shade500,
                     ),
                   ),
                 ],
@@ -242,23 +283,16 @@ class _HomepageState extends State<Homepage> {
                   child: GestureDetector(
                     onTap: () async {
                       await launchUrl(Uri.parse(news["url"]));
-                      //---------e7tyaty lw m3rft4 a4a8 el web view-------------
-
-                      //--------------------m3rft4 a4a8lha 😂😂-----------------
-
-                      // await Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => WebViewScreen(url: news["url"]),
-                      //   ),
-                      // );
                     },
                     child: Card(
                       elevation: 0,
+                      color: isDarkMode ? darkCardColor : Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                         side: BorderSide(
-                          color: Colors.grey.shade200,
+                          color: isDarkMode
+                              ? Colors.grey.shade800
+                              : Colors.grey.shade200,
                           width: 1,
                         ),
                       ),
@@ -281,7 +315,9 @@ class _HomepageState extends State<Homepage> {
                                     if (loadingProgress == null) return child;
                                     return Container(
                                       height: 200,
-                                      color: Colors.grey.shade100,
+                                      color: isDarkMode
+                                          ? Colors.grey.shade900
+                                          : Colors.grey.shade100,
                                       child: const Center(
                                         child: SizedBox(
                                           height: 30,
@@ -297,20 +333,26 @@ class _HomepageState extends State<Homepage> {
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
                                       height: 200,
-                                      color: Colors.grey.shade100,
+                                      color: isDarkMode
+                                          ? Colors.grey.shade900
+                                          : Colors.grey.shade100,
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           Icon(
                                             Icons.broken_image_rounded,
                                             size: 50,
-                                            color: Colors.grey.shade400,
+                                            color: isDarkMode
+                                                ? Colors.grey.shade600
+                                                : Colors.grey.shade400,
                                           ),
                                           const SizedBox(height: 8),
                                           Text(
                                             "Image Unavailable",
                                             style: TextStyle(
-                                              color: Colors.grey.shade500,
+                                              color: isDarkMode
+                                                  ? Colors.grey.shade500
+                                                  : Colors.grey.shade500,
                                               fontSize: 12,
                                             ),
                                           ),
@@ -319,7 +361,6 @@ class _HomepageState extends State<Homepage> {
                                     );
                                   },
                                 ),
-
                                 Positioned(
                                   top: 12,
                                   left: 12,
@@ -329,7 +370,9 @@ class _HomepageState extends State<Homepage> {
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: primaryColor.withOpacity(0.9),
+                                      color: (isDarkMode
+                                          ? Colors.blue.shade700
+                                          : primaryColor).withOpacity(0.9),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(
@@ -347,7 +390,9 @@ class _HomepageState extends State<Homepage> {
                             )
                                 : Container(
                               height: 200,
-                              color: Colors.grey.shade100,
+                              color: isDarkMode
+                                  ? Colors.grey.shade900
+                                  : Colors.grey.shade100,
                               child: Center(
                                 child: Lottie.network(
                                   "https://lottie.host/c4ba0092-ddce-478e-b08d-b4d0ebdbe2af/Yn5o6VnhvQ.lottie",
@@ -363,11 +408,11 @@ class _HomepageState extends State<Homepage> {
                               children: [
                                 Text(
                                   news["title"] ?? "No Title",
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.bold,
                                     height: 1.3,
-                                    color: Color(0xFF1A1A2E),
+                                    color: isDarkMode ? darkTextColor : const Color(0xFF1A1A2E),
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -376,7 +421,7 @@ class _HomepageState extends State<Homepage> {
                                 Text(
                                   news["description"] ?? "No Description Available",
                                   style: TextStyle(
-                                    color: Colors.grey.shade600,
+                                    color: isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600,
                                     fontSize: 14,
                                     height: 1.5,
                                   ),
@@ -389,12 +434,14 @@ class _HomepageState extends State<Homepage> {
                                     Container(
                                       padding: const EdgeInsets.all(8),
                                       decoration: BoxDecoration(
-                                        color: primaryColor.withOpacity(0.08),
+                                        color: (isDarkMode
+                                            ? Colors.blue.shade700
+                                            : primaryColor).withOpacity(0.08),
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Icon(
                                         Icons.public_rounded,
-                                        color: primaryColor,
+                                        color: isDarkMode ? Colors.blue.shade400 : primaryColor,
                                         size: 16,
                                       ),
                                     ),
@@ -408,7 +455,7 @@ class _HomepageState extends State<Homepage> {
                                             style: TextStyle(
                                               fontWeight: FontWeight.w600,
                                               fontSize: 13,
-                                              color: Colors.grey.shade800,
+                                              color: isDarkMode ? Colors.grey.shade300 : Colors.grey.shade800,
                                             ),
                                           ),
                                           if (news["publishedAt"] != null)
@@ -416,7 +463,7 @@ class _HomepageState extends State<Homepage> {
                                               _formatDate(news["publishedAt"]),
                                               style: TextStyle(
                                                 fontSize: 11,
-                                                color: Colors.grey.shade500,
+                                                color: isDarkMode ? Colors.grey.shade500 : Colors.grey.shade500,
                                               ),
                                             ),
                                         ],
@@ -424,7 +471,9 @@ class _HomepageState extends State<Homepage> {
                                     ),
                                     Container(
                                       decoration: BoxDecoration(
-                                        color: Colors.grey.shade100,
+                                        color: isDarkMode
+                                            ? Colors.grey.shade800
+                                            : Colors.grey.shade100,
                                         borderRadius: BorderRadius.circular(12),
                                       ),
                                       child: IconButton(
@@ -437,7 +486,7 @@ class _HomepageState extends State<Homepage> {
                                         },
                                         icon: Icon(
                                           Icons.share_rounded,
-                                          color: primaryColor,
+                                          color: isDarkMode ? Colors.blue.shade400 : primaryColor,
                                           size: 20,
                                         ),
                                         padding: EdgeInsets.zero,

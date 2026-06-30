@@ -41,6 +41,8 @@ dependencies:
   webview_flutter: ^4.4.2
   webview_flutter_android: ^3.12.1
   webview_flutter_wkwebview: ^3.9.1
+  shared_preferences:
+  provider:
 
 dev_dependencies:
   flutter_test:
