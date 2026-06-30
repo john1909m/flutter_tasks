@@ -28,7 +28,7 @@ class _HomepageState extends State<Homepage> {
   final Color primaryColor = const Color(0xFF002493);
   final Color secondaryColor = const Color(0xFF002BB5);
   final Color accentColor = const Color(0xFF5B7BFB);
-  final Color backgroundColor = const Color(0xFFF8FAFC); // Light Gray
+  final Color backgroundColor = const Color(0xFFF8FAFC);
 
   // Dark mode colors
   final Color darkPrimaryColor = const Color(0xFF1A1A2E);
@@ -107,7 +107,7 @@ class _HomepageState extends State<Homepage> {
           ],
         ),
         actions: [
-          // Theme Toggle Button
+          
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: GestureDetector(
